@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socket.IO Test</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    #messages {
+      height: 300px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      padding: 10px;
+      overflow-y: auto;
+    }
+    .message {
+      margin-bottom: 5px;
+      padding: 5px;
+      background-color: #f0f0f0;
+      border-radius: 5px;
+    }
+    .timestamp {
+      font-size: 0.8em;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>Socket.IO Test</h1>
+  <div id="connection-status">Estado: Desconectado</div>
+  <div id="messages"></div>
+  
+  <script>
+    // Conectar al servidor Socket.IO
+    const socket = io('http://localhost:3000', {
+      withCredentials: true,
+      transports: ['websocket', 'polling']
+    });
+    
+    const connectionStatus = document.getElementById('connection-status');
+    const messagesContainer = document.getElementById('messages');
+    
+    // Eventos de conexión
+    socket.on('connect', () => {
+      connectionStatus.textContent = 'Estado: Conectado';
+      connectionStatus.style.color = 'green';
+      addMessage('Sistema', 'Conectado al servidor');
+    });
+    
+    socket.on('disconnect', () => {
+      connectionStatus.textContent = 'Estado: Desconectado';
+      connectionStatus.style.color = 'red';
+      addMessage('Sistema', 'Desconectado del servidor');
+    });
+    
+    socket.on('connect_error', (error) => {
+      connectionStatus.textContent = `Estado: Error de conexión - ${error.message}`;
+      connectionStatus.style.color = 'red';
+      addMessage('Error', `Error de conexión: ${error.message}`);
+    });
+    
+    // Escuchar eventos de operaciones de usuario
+    socket.on('userOperation', (data) => {
+      addMessage('Operación de Usuario', data.message, data.timestamp);
+    });
+    
+    function addMessage(type, text, timestamp = new Date().toISOString()) {
+      const messageElement = document.createElement('div');
+      messageElement.className = 'message';
+      
+      const formattedTime = new Date(timestamp).toLocaleTimeString();
+      messageElement.innerHTML = `<strong>${type}:</strong> ${text} <span class="timestamp">${formattedTime}</span>`;
+      
+      messagesContainer.appendChild(messageElement);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  </script>
+</body>
+</html>
