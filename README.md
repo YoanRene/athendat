@@ -36,8 +36,6 @@ PORT=3000
 MONGODB_URI=mongodb://localhost:27017/athendat
 JWT_SECRET=your_jwt_secret_key
 JWT_EXPIRATION=3600
-LOG_LEVEL=info
-LOG_FILE_PATH=logs/app.log
 ```
 
 Asegúrate de cambiar `your_jwt_secret_key` por una clave secreta segura.
@@ -125,9 +123,21 @@ socket.on('userOperation', (data) => {
 - **src/database/** - Configuración de la base de datos
 - **src/logging/** - Configuración de logs
 
-## Logs
+## Sistema de Logs
 
-Los logs de la aplicación se guardan en el directorio especificado en la variable de entorno `LOG_FILE_PATH`. Por defecto, se guardan en `logs/app.log`.
+La aplicación utiliza Winston para el registro de logs, con las siguientes características:
+
+### Características del sistema de logs
+
+- **Rotación diaria de archivos**: Los logs se guardan en archivos que rotan diariamente con el formato `application-YYYY-MM-DD.log`.
+- **Logs de error separados**: Los errores se guardan en archivos separados con el formato `error-YYYY-MM-DD.log`.
+- **Compresión automática**: Los archivos antiguos se comprimen automáticamente para ahorrar espacio.
+- **Retención configurable**: Por defecto, los logs se mantienen durante 14 días.
+- **Formato JSON**: Los logs se guardan en formato JSON para facilitar su procesamiento.
+
+### Ubicación de los logs
+
+Los archivos de log se guardan en el directorio `logs/` en la raíz del proyecto. Este directorio se crea automáticamente si no existe.
 
 ## Licencia
 
